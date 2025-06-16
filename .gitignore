@@ -1,8 +1,0 @@
-# Configuration file with secrets
-config.js
-
-# Local data file
-/data/tasks.json
-
-# Environment variables
-.env 
