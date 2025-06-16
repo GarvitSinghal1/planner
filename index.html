@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Planner</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-200">
+    <div id="notification-banner" class="notification-banner"></div>
+
+    <nav class="bg-white dark:bg-gray-800 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-book-open text-2xl text-blue-500 mr-2"></i>
+                    <h1 class="text-2xl font-bold">Academic Planner</h1>
+                </div>
+                <div class="flex items-center">
+                    <button id="theme-toggle" class="mr-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <i class="fas fa-sun text-yellow-500"></i>
+                        <i class="fas fa-moon text-gray-400 hidden"></i>
+                    </button>
+                    <button id="settings-btn" class="mr-2 sm:mr-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <i class="fas fa-cog text-gray-500 dark:text-gray-400"></i>
+                    </button>
+                    <button id="suggest-task-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-2 sm:px-4 rounded-full shadow-lg transition-transform transform hover:scale-105 mr-2 sm:mr-4">
+                        <i class="fas fa-wand-magic-sparkles sm:mr-2"></i><span class="hidden sm:inline"> Suggest Task</span>
+                    </button>
+                    <button id="add-task-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-2 sm:px-4 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                        <i class="fas fa-plus sm:mr-2"></i><span class="hidden sm:inline"> Add Task</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="p-4 sm:p-6 lg:p-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Filters Section -->
+            <div id="filters" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md mb-6">
+                <div class="flex flex-wrap items-end gap-x-6 gap-y-4">
+                    <!-- Task Type Filters -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Filter by Type</label>
+                        <div id="type-filters" class="flex flex-wrap gap-2">
+                            <button class="filter-btn type-filter" data-type="all">All</button>
+                            <button class="filter-btn type-filter" data-type="school">School</button>
+                            <button class="filter-btn type-filter" data-type="coaching">Coaching</button>
+                            <button class="filter-btn type-filter" data-type="self-study">Self-study</button>
+                        </div>
+                    </div>
+                    <!-- Date Range Filter -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Filter by Due Date</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="date" id="start-date-filter" class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none">
+                            <span class="text-gray-500">→</span>
+                            <input type="date" id="end-date-filter" class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none">
+                        </div>
+                    </div>
+                    <!-- Subject Filter -->
+                    <div>
+                        <label for="subject-filter" class="block text-sm font-medium mb-1">Filter by Subject</label>
+                        <input type="text" id="subject-filter" placeholder="e.g., Math, Physics" class="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none">
+                    </div>
+                    <!-- Search Bar -->
+                     <div>
+                        <label for="search-bar" class="block text-sm font-medium mb-1">Search Tasks</label>
+                        <input type="text" id="search-bar" placeholder="Search by title or notes..." class="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-1 mb-6">
+                <div class="bg-white dark:bg-gray-800 p-1 sm:p-2 rounded-full shadow-md flex flex-wrap gap-1">
+                    <button id="view-all" class="view-btn px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base">All</button>
+                    <button id="view-day" class="view-btn px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base">Day</button>
+                    <button id="view-week" class="view-btn px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base">Week</button>
+                    <button id="view-month" class="view-btn px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base">Month</button>
+                    <button id="view-history" class="view-btn px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base">History</button>
+                    <button id="view-dashboard" class="view-btn px-3 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base">Dashboard</button>
+                </div>
+            </div>
+
+            <div id="calendar-view" class="hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <button id="prev-month-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-chevron-left"></i></button>
+                    <h2 id="month-year-header" class="text-xl font-bold"></h2>
+                    <button id="next-month-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-1">
+                    <!-- Day names will be generated here -->
+                </div>
+            </div>
+
+            <div id="dashboard-view" class="hidden p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-xl sm:text-2xl font-bold">Productivity Dashboard</h2>
+                    <button id="export-pdf-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-lg w-full sm:w-auto">
+                        <i class="fas fa-file-pdf mr-2"></i> Export as PDF
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h3 class="font-semibold mb-2">Task Completion Stats</h3>
+                        <canvas id="completion-chart"></canvas>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h3 class="font-semibold mb-2">Task Type Breakdown</h3>
+                        <canvas id="type-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="task-grid-container">
+                <div id="task-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Tasks will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Adding/Editing Tasks -->
+    <div id="task-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-lg transform transition-all scale-95 opacity-0 overflow-y-auto max-h-screen">
+            <h2 id="modal-title" class="text-2xl font-bold mb-6">Add New Task</h2>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                <div class="mb-4">
+                    <label for="title" class="block text-sm font-medium mb-1">Title</label>
+                    <input type="text" id="title" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none" required>
+                </div>
+                <div class="mb-4">
+                    <label for="subject" class="block text-sm font-medium mb-1">Subject</label>
+                    <input type="text" id="subject" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none" placeholder="e.g., Math, English">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="type" class="block text-sm font-medium mb-1">Type</label>
+                        <select id="type" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none">
+                            <option value="school">School</option>
+                            <option value="coaching">Coaching</option>
+                            <option value="self-study">Self-study</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="priority" class="block text-sm font-medium mb-1">Priority</label>
+                        <select id="priority" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none">
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="difficulty" class="block text-sm font-medium mb-1">Difficulty</label>
+                    <select id="difficulty" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                        <option value="very-hard">Very Hard</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="due-date" class="block text-sm font-medium mb-1">Due Date</label>
+                    <input type="date" id="due-date" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none" required>
+                </div>
+                <div class="mb-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="dynamic-priority" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <label for="dynamic-priority" class="ml-2 block text-sm">Enable Dynamic Priority</label>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label for="notes" class="block text-sm font-medium mb-1">Notes (Optional)</label>
+                    <textarea id="notes" rows="4" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none"></textarea>
+                </div>
+                
+                <!-- Recurring Task Section -->
+                <div class="mb-6 p-4 border border-dashed dark:border-gray-600 rounded-lg">
+                     <label class="block text-sm font-medium mb-2">Recurring Task (Optional)</label>
+                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Set this task to repeat automatically. The original task will become a template.</p>
+                     <select id="recurring-frequency" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none">
+                        <option value="none">Does not repeat</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                     </select>
+                </div>
+                
+                <!-- Sub-tasks Section -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">Sub-tasks</label>
+                    <div id="subtasks-container" class="space-y-2">
+                        <!-- Sub-tasks will be dynamically added here -->
+                    </div>
+                    <button type="button" id="add-subtask-btn" class="mt-2 text-sm text-blue-500 hover:text-blue-700">+ Add Sub-task</button>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="cancel-btn" class="px-6 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Task Suggestion -->
+    <div id="suggestion-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-lg text-center transform transition-all scale-95 opacity-0">
+            <h2 class="text-2xl font-bold mb-4">Let's Do This!</h2>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">Based on your tasks, I'd recommend starting with this one:</p>
+            <div id="suggested-task-card" class="mb-6">
+                <!-- Suggested task will be rendered here -->
+            </div>
+            <button id="close-suggestion-btn" class="px-6 py-2 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition">Got it!</button>
+        </div>
+    </div>
+
+    <!-- Modal for Settings -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-lg transform transition-all scale-95 opacity-0">
+            <h2 class="text-2xl font-bold mb-6">Settings</h2>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Task Suggestion Strategy</label>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Choose whether the "Suggest Task" button should prioritize harder tasks or easier ones.</p>
+                    <select id="suggestion-strategy" class="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-transparent focus:border-blue-500 focus:outline-none">
+                        <option value="hardFirst">Prioritize Harder Tasks</option>
+                        <option value="easyFirst">Prioritize Easier Tasks</option>
+                    </select>
+                </div>
+                <hr class="dark:border-gray-600">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Notifications</label>
+                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Get reminders for tasks that are due today or tomorrow.</p>
+                    <button id="enable-notifications-btn" class="w-full p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">Enable Notifications</button>
+                    <p id="notification-status" class="text-xs text-gray-500 dark:text-gray-400 mt-2"></p>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-4 mt-8">
+                <button type="button" id="cancel-settings-btn" class="px-6 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">Cancel</button>
+                <button type="button" id="save-settings-btn" class="px-6 py-2 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script src="script.js" defer></script>
+</body>
+</html> 
