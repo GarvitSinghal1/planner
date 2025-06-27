@@ -28,9 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let typeChart = null;
     
     // --- Constants for GitHub ---
-    // The GITHUB_TOKEN will be replaced by the GitHub Actions workflow during deployment.
-    // Keep this empty in your local code.
-    const GITHUB_TOKEN = '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'; 
+    // The GITHUB_TOKEN is loaded from the untracked config.js file for local development.
+    const GITHUB_TOKEN = 'github_pat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; 
     const GITHUB_USERNAME = 'GarvitSinghal1';
     const GITHUB_REPO = 'adcplannerDATA';
     const FILE_PATH = 'data/tasks.json';
