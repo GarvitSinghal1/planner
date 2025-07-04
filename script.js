@@ -28,8 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let typeChart = null;
     
     // --- Constants for GitHub ---
-    // The GITHUB_TOKEN is loaded from the untracked config.js file for local development.
-    const GITHUB_TOKEN = 'github_pat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; 
+    const GITHUB_TOKEN = 'PASTE_YOUR_NEW_GITHUB_TOKEN_HERE'; 
     const GITHUB_USERNAME = 'GarvitSinghal1';
     const GITHUB_REPO = 'adcplannerDATA';
     const FILE_PATH = 'data/tasks.json';
@@ -1051,5 +1050,168 @@ document.addEventListener('DOMContentLoaded', () => {
             e.target.closest('.flex').remove();
         }
     });
+
+    // Pomodoro Section Logic
+    const pomodoroBtn = document.getElementById('pomodoro-btn');
+    const pomodoroSection = document.getElementById('pomodoro-section');
+    const mainContent = document.querySelector('main > .max-w-7xl');
+    const dashboardView = document.getElementById('dashboard-view');
+    const calendarView = document.getElementById('calendar-view');
+    const taskGridContainer = document.getElementById('task-grid-container');
+
+    // Timer elements
+    const pomodoroTimer = document.getElementById('pomodoro-timer');
+    const pomodoroStart = document.getElementById('pomodoro-start');
+    const pomodoroPause = document.getElementById('pomodoro-pause');
+    const pomodoroReset = document.getElementById('pomodoro-reset');
+    const pomodoroDurationInput = document.getElementById('pomodoro-duration');
+    const pomodoroBreakInput = document.getElementById('pomodoro-break');
+    const pomodoroSuggestTaskBtn = document.getElementById('pomodoro-suggest-task-btn');
+    const ambientMusicBtn = document.getElementById('ambient-music-btn');
+    const ambientMusicLabel = document.getElementById('ambient-music-label');
+    const ambientAudio = document.getElementById('ambient-audio');
+    const hideVideoBtn = document.getElementById('hide-video-btn');
+    const pomodoroPhaseLabel = document.getElementById('pomodoro-phase-label');
+
+    let pomodoroInterval = null;
+    let isBreak = false;
+    let pomodoroTime = 25 * 60;
+    let breakTime = 5 * 60;
+    let timeLeft = pomodoroTime;
+    let timerRunning = false;
+
+    function updatePomodoroDisplay() {
+        const min = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const sec = (timeLeft % 60).toString().padStart(2, '0');
+        pomodoroTimer.textContent = `${min}:${sec}`;
+        if (isBreak) {
+            pomodoroTimer.style.background = 'none';
+            pomodoroTimer.style.color = '#22c55e'; // Tailwind green-500
+            pomodoroTimer.style.borderRadius = '';
+            pomodoroPhaseLabel.textContent = 'Break Time';
+            pomodoroPhaseLabel.style.color = '#22c55e';
+        } else {
+            pomodoroTimer.style.background = 'none';
+            pomodoroTimer.style.color = '#3b82f6'; // Tailwind blue-500
+            pomodoroTimer.style.borderRadius = '';
+            pomodoroPhaseLabel.textContent = 'Study Time';
+            pomodoroPhaseLabel.style.color = '#3b82f6';
+        }
+    }
+
+    function startPomodoro() {
+        if (timerRunning) return;
+        timerRunning = true;
+        pomodoroInterval = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updatePomodoroDisplay();
+            } else {
+                clearInterval(pomodoroInterval);
+                timerRunning = false;
+                if (!isBreak) {
+                    // Start break
+                    isBreak = true;
+                    timeLeft = breakTime;
+                    updatePomodoroDisplay();
+                    startPomodoro();
+                } else {
+                    // End break, reset
+                    isBreak = false;
+                    timeLeft = pomodoroTime;
+                    updatePomodoroDisplay();
+                }
+            }
+        }, 1000);
+    }
+
+    function pausePomodoro() {
+        clearInterval(pomodoroInterval);
+        timerRunning = false;
+    }
+
+    function resetPomodoro() {
+        clearInterval(pomodoroInterval);
+        timerRunning = false;
+        isBreak = false;
+        pomodoroTime = parseInt(pomodoroDurationInput.value, 10) * 60;
+        breakTime = parseInt(pomodoroBreakInput.value, 10) * 60;
+        timeLeft = pomodoroTime;
+        updatePomodoroDisplay();
+    }
+
+    pomodoroStart && pomodoroStart.addEventListener('click', startPomodoro);
+    pomodoroPause && pomodoroPause.addEventListener('click', pausePomodoro);
+    pomodoroReset && pomodoroReset.addEventListener('click', resetPomodoro);
+
+    pomodoroDurationInput && pomodoroDurationInput.addEventListener('change', () => {
+        pomodoroTime = parseInt(pomodoroDurationInput.value, 10) * 60;
+        if (!isBreak) {
+            timeLeft = pomodoroTime;
+            updatePomodoroDisplay();
+        }
+    });
+
+    pomodoroBreakInput && pomodoroBreakInput.addEventListener('change', () => {
+        breakTime = parseInt(pomodoroBreakInput.value, 10) * 60;
+        if (isBreak) {
+            timeLeft = breakTime;
+            updatePomodoroDisplay();
+        }
+    });
+
+    // Show/hide Pomodoro section
+    if (pomodoroBtn && pomodoroSection) {
+        pomodoroBtn.addEventListener('click', () => {
+            pomodoroSection.classList.remove('hidden');
+            if (mainContent) mainContent.classList.add('hidden');
+            if (dashboardView) dashboardView.classList.add('hidden');
+            if (calendarView) calendarView.classList.add('hidden');
+            if (taskGridContainer) taskGridContainer.classList.add('hidden');
+        });
+    }
+
+    // Optionally, add a way to exit Pomodoro (e.g., Esc key)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !pomodoroSection.classList.contains('hidden')) {
+            pomodoroSection.classList.add('hidden');
+            if (mainContent) mainContent.classList.remove('hidden');
+            if (dashboardView) dashboardView.classList.remove('hidden');
+            if (calendarView) calendarView.classList.remove('hidden');
+            if (taskGridContainer) taskGridContainer.classList.remove('hidden');
+            resetPomodoro();
+        }
+    });
+
+    // Ambient music toggle using iframe
+    const ytAmbientIframe = document.getElementById('yt-ambient-iframe');
+    let ytAmbientVisible = false;
+    if (ambientMusicBtn && ambientMusicLabel && ytAmbientIframe && hideVideoBtn) {
+        ambientMusicBtn.addEventListener('click', () => {
+            ytAmbientVisible = !ytAmbientVisible;
+            ytAmbientIframe.style.display = ytAmbientVisible ? 'block' : 'none';
+            hideVideoBtn.style.display = ytAmbientVisible ? 'inline-block' : 'none';
+            ambientMusicLabel.textContent = ytAmbientVisible ? 'Pause Ambient Music' : 'Play Ambient Music';
+        });
+        hideVideoBtn.addEventListener('click', () => {
+            ytAmbientIframe.style.display = 'none';
+            hideVideoBtn.style.display = 'none';
+            // Music will continue playing if already started
+        });
+    }
+
+    // Pomodoro Suggest Task button triggers main suggestion logic
+    if (pomodoroSuggestTaskBtn) {
+        pomodoroSuggestTaskBtn.addEventListener('click', () => {
+            const suggestBtn = document.getElementById('suggest-task-btn');
+            if (suggestBtn) suggestBtn.click();
+        });
+    }
+
+    // Initialize Pomodoro display
+    if (pomodoroSection) {
+        resetPomodoro();
+        updatePomodoroDisplay();
+    }
 }); 
 
